@@ -1,17 +1,10 @@
 package telran.logs.bugs.dto;
 
-import java.util.*;
+import java.util.Date;
+
 import javax.validation.constraints.*;
 
 public class LogDto {
-	@NotNull
-	public Date dateTime;
-	@NotNull
-	public LogType logType;
-	@NotEmpty
-	public String artifact;
-	public int responseTime;
-	public String result;
 	public LogDto(@NotNull Date dateTime, @NotNull LogType logType, @NotEmpty String artifact, int responseTime,
 			String result) {
 		super();
@@ -21,6 +14,14 @@ public class LogDto {
 		this.responseTime = responseTime;
 		this.result = result;
 	}
+	@NotNull
+	public Date dateTime;
+	@NotNull
+	public LogType logType;
+	@NotEmpty
+	public String artifact;
+	public int responseTime;
+	public String result;
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -63,4 +64,6 @@ public class LogDto {
 		return true;
 	}
 	
+	
+
 }

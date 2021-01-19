@@ -1,7 +1,8 @@
 package telran.logs.bugs.dto;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import java.util.Date;
 
 import javax.validation.Valid;
