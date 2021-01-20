@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.validation.Valid;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,47 +29,51 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(LogDtoTest.TestController.class)
 @ContextConfiguration(classes = LogDtoTest.TestController.class)
 public class LogDtoTest {
+	static LogDto logDtoExp;
+	int status;
 	public static @RestController class TestController{
-		static LogDto logDtoExp = new LogDto(new Date(), LogType.NO_EXCEPTIONS, "artifact", 0, "");
 		@PostMapping("/")
 		void testPost (@RequestBody @Valid LogDto logDto) {
-			assertEquals(logDtoExp, logDto);
-		}
-		static LogDto logDtoExpWithNullDate = new LogDto(null, LogType.NO_EXCEPTIONS, "artifact", 0, "");
-		@PostMapping("/WithNull/Date")
-		void testPostWithNullDate (@RequestBody @Valid LogDto logDto) {
-			assertEquals(logDtoExp, logDto);
-		}
-		
-		static LogDto logDtoExpWithNullLogType = new LogDto(new Date(), null, "artifact", 0, "");
-		@PostMapping("/WithNull/LogTypee")
-		void testPostWithNulllLogType (@RequestBody @Valid LogDto logDto) {
 			assertEquals(logDtoExp, logDto);
 		}
 	}
 	ObjectMapper mapper = new ObjectMapper();
 	@Autowired
 	MockMvc mock;
-	@Test
-	void testPostRun () throws JsonProcessingException, Exception {
-		assertEquals(200, mock.perform(post("/").contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsString(TestController.logDtoExp)))			
+	
+	@BeforeEach
+	void setup() {
+		logDtoExp = new LogDto(new Date(), LogType.NO_EXCEPTIONS, "artifact", 0, "");
+		status = 200;
+		
+	}
+	private void equalsTest () throws JsonProcessingException, Exception {
+		assertEquals(status, mock.perform(post("/").contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(logDtoExp)))			
 				.andReturn().getResponse()
 				.getStatus());
+	}
+	
+	@Test
+	void testPostRun () throws JsonProcessingException, Exception {	
+		equalsTest ();
 	}
 	@Test
 	void testPostRunWithNullDate () throws JsonProcessingException, Exception {
-		assertEquals(400, mock.perform(post("/WithNull/Date").contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsString(TestController.logDtoExpWithNullDate)))			
-				.andReturn().getResponse()
-				.getStatus());
+		status = 400;
+		logDtoExp.logType = null;
+		equalsTest ();
 	}
 	@Test
 	void testPostRunWithNulllLogType () throws JsonProcessingException, Exception {
-		assertEquals(404, mock.perform(post("/WithNull/LogType").contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsString(TestController.logDtoExpWithNullLogType)))			
-				.andReturn().getResponse()
-				.getStatus());
+		status = 400;
+		logDtoExp.dateTime = null;
+		equalsTest ();
 	}
-
+	@Test
+	void testPostRunWithEnptyArtifact () throws JsonProcessingException, Exception {
+		status = 400;
+		logDtoExp.artifact = "";
+		equalsTest ();
+	}
 }
