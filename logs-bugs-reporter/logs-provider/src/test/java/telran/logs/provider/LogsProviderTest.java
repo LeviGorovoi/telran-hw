@@ -2,97 +2,111 @@ package telran.logs.provider;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.dto.LogType;
-import telran.logs.bugs.mongo.doc.LogDoc;
 import telran.logs.bugs.provider.RandomLogs;
-import static telran.logs.bugs.provider.RandomLogs.*;
 
+@ExtendWith(SpringExtension.class)
+@EnableAutoConfiguration
+@ContextConfiguration(classes = RandomLogs.class)
 class LogsProviderTest {
-
-	private static final double EXCEPTION_PROB = 0.1;
-	private static final double SEC_EXCEPTION_PROB = 0.3;
-	private static final double AUTHENT_SEC_EXCEPTION_PROB = 0.7;
-	private static final int NUMBER_OF_DOCS = 100000;
-	static RandomLogs randomLogsDoc;
-	static double rendomNumber;
-	
-	static private LogDoc createRandomLogsDoc() throws Exception {
-		rendomNumber = Math.random();
-	randomLogsDoc = new RandomLogs(EXCEPTION_PROB, SEC_EXCEPTION_PROB, AUTHENT_SEC_EXCEPTION_PROB, rendomNumber);	
-	return randomLogsDoc.createRandomLog();
-	}	
-	
-	static private List<LogDoc> generateListOfRandomDocs(){
-		List<LogDoc> docStream = Stream.generate(() -> {
-		try {
-			return createRandomLogsDoc();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		
-	}).parallel().limit(NUMBER_OF_DOCS).collect(Collectors.toList());
-		return docStream;
-	}
-	
-	private Map<LogType, Long> createOccurrenceTableByLogType() {
-		 return  generateListOfRandomDocs().stream().parallel().collect(Collectors.groupingBy(doc->doc.getLogType(), Collectors.counting()));
-	}
+	private static final String AUTHENTICATION_ARTIFACT = "authentication";
+	private static final String AUTHORIZATION_ARTIFACT = "authorization";
+	private static final String CLASS_ARTIFACT = "class";
+	private static final long N_LOGS = 100000;
+	@Autowired
+	RandomLogs randomLogs;
 
 	@Test
-	void logTypeTest() {
-		Map<LogType, Long> docsMap = createOccurrenceTableByLogType();
-		Map<LogType, Double> docsMapExpected = new HashMap<>();
-		docsMapExpected.put(LogType.NO_EXCEPTION, 1-EXCEPTION_PROB);
-		docsMapExpected.put(LogType.BAD_REQUEST_EXCEPTION, EXCEPTION_PROB*(1-SEC_EXCEPTION_PROB)/4);
-		docsMapExpected.put(LogType.NOT_FOUND_EXCEPTION, EXCEPTION_PROB*(1-SEC_EXCEPTION_PROB)/4);
-		docsMapExpected.put(LogType.DUPLICATED_KEY_EXCEPTION, EXCEPTION_PROB*(1-SEC_EXCEPTION_PROB)/4);
-		docsMapExpected.put(LogType.SERVER_EXCEPTION, EXCEPTION_PROB*(1-SEC_EXCEPTION_PROB)/4);
-		docsMapExpected.put(LogType.AUTHENTICATION_EXCEPTION, EXCEPTION_PROB*SEC_EXCEPTION_PROB*AUTHENT_SEC_EXCEPTION_PROB);
-		docsMapExpected.put(LogType.AUTHORIZATION_EXCEPTION, EXCEPTION_PROB*SEC_EXCEPTION_PROB*(1-AUTHENT_SEC_EXCEPTION_PROB));
+	void logTypeArtifactTest() throws Exception {
+		EnumMap<LogType, String> logTypeArtifactsMap = getMapForTest();
+		logTypeArtifactsMap.forEach((k, v) -> {
+			switch (k) {
+			case AUTHENTICATION_EXCEPTION:
+				assertEquals(AUTHENTICATION_ARTIFACT, v);
+				break;
+			case AUTHORIZATION_EXCEPTION:
+				assertEquals(AUTHORIZATION_ARTIFACT, v);
+				break;
+			default:
+				assertEquals(CLASS_ARTIFACT, v);
 
-		docsMapExpected.entrySet().forEach(item->{			
-			System.out.println(item.getKey() +" " +item.getValue());			
-			assertTrue(Math.abs(item.getValue() - (double) docsMap.get(item.getKey())/NUMBER_OF_DOCS)<0.05);
-		});		
-	}
-
-	@Test
-	void othersTests() {
-		generateListOfRandomDocs().stream().parallel().forEach(doc->{
-//			Artifact
-			if(doc.getLogType().equals(LogType.AUTHENTICATION_EXCEPTION)) {
-				assertTrue(doc.getArtifact().equalsIgnoreCase(AUTHENTICATION));
-				assertFalse(doc.getArtifact().matches("class"));
-				assertFalse(doc.getArtifact().equalsIgnoreCase(AUTHORIZATION));
-			}else if(doc.getLogType().equals(LogType.AUTHORIZATION_EXCEPTION)) {
-				assertTrue(doc.getArtifact().equalsIgnoreCase(AUTHORIZATION));
-				assertFalse(doc.getArtifact().matches("class"));
-				assertFalse(doc.getArtifact().equalsIgnoreCase(AUTHENTICATION));
-			}else {
-				assertTrue(doc.getArtifact().matches("class[0-9]+"));
-				assertFalse(doc.getArtifact().matches("class"));
-				assertFalse(doc.getArtifact().equalsIgnoreCase(AUTHORIZATION));
 			}
-			
-//			responseTime
-			if(doc.getLogType().equals(LogType.NO_EXCEPTION)) {
-				assertTrue(doc.getResponseTime()==1);
-				assertFalse(doc.getResponseTime()==0);
-			}else {
-				assertTrue(doc.getResponseTime()==0);
-				assertFalse(doc.getResponseTime()==1);
-			}
-			
-//			result			
-				assertTrue(doc.getResult().isEmpty());
-				assertFalse(!doc.getResult().isEmpty());			
 		});
+
 	}
-	
+
+	private EnumMap<LogType, String> getMapForTest() throws NoSuchMethodException, SecurityException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Method getMapMethod = randomLogs.getClass().getDeclaredMethod("getLogArtifactMap");
+		getMapMethod.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		EnumMap<LogType, String> logTypeArtifactsMap = (EnumMap<LogType, String>) getMapMethod.invoke(randomLogs);
+		return logTypeArtifactsMap;
+	}
+
+	@Test
+	void generation() throws Exception {
+
+		List<LogDto> logs = Stream.generate(() -> {
+			try {
+				return randomLogs.createRandomLog();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}).limit(N_LOGS).collect(Collectors.toList());
+		testLogContent(logs);
+		Map<LogType, Long> logTypeOccurrences = logs.stream()
+				.collect(Collectors.groupingBy(l -> l.logType, Collectors.counting()));
+		logTypeOccurrences.forEach((k, v) -> {
+			System.out.printf("LogType: %s, count: %d\n", k, v);
+		});
+		assertEquals(LogType.values().length, logTypeOccurrences.entrySet().size());
+
+	}
+
+	private void testLogContent(List<LogDto> logs) {
+		logs.forEach(log -> {
+			switch (log.logType) {
+			case AUTHENTICATION_EXCEPTION:
+				assertEquals(AUTHENTICATION_ARTIFACT, log.artifact);
+				assertEquals(0, log.responseTime);
+				assertTrue(log.result.isEmpty());
+				break;
+			case AUTHORIZATION_EXCEPTION:
+				assertEquals(AUTHORIZATION_ARTIFACT, log.artifact);
+				assertEquals(0, log.responseTime);
+				assertTrue(log.result.isEmpty());
+				break;
+			
+			case NO_EXCEPTION:
+				assertEquals(CLASS_ARTIFACT, log.artifact);
+				assertTrue(log.responseTime > 0);
+				assertTrue(log.result.isEmpty());
+				break;
+			
+			default:
+				assertEquals(CLASS_ARTIFACT, log.artifact);
+				assertEquals(0, log.responseTime);
+				assertTrue(log.result.isEmpty());
+				break;
+			
+			}
+		});
+
+	}
+
 }
