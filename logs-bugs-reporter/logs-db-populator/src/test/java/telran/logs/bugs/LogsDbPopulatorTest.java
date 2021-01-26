@@ -19,8 +19,8 @@ import telran.logs.bugs.mongo.doc.LogDoc;
 
 @SpringBootTest
 @Import(TestChannelBinderConfiguration.class)
-@EnableAutoConfiguration
-@AutoConfigureDataMongo
+//@EnableAutoConfiguration
+//@AutoConfigureDataMongo
 public class LogsDbPopulatorTest {
 	@Autowired
 	InputDestination input;

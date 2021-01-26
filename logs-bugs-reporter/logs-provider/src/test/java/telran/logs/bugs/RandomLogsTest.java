@@ -153,7 +153,7 @@ for (int i = 0; i < 10; i++) {
 	while (true) {
 	byte[] messageBytes;
 	try {
-		messageBytes = output.receive().getPayload();
+		messageBytes = output.receive(1000).getPayload();
 		if (messageBytes.length != 0) {
 			String messageStr = new String(messageBytes);
 			stringsOfDto.add(messageStr);
