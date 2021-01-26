@@ -43,7 +43,7 @@ void takeAndSaveLogDto( LogDto logDto) throws Exception {
 	Set<ConstraintViolation<LogDto>> violations = validator.validate(logDto);
 	for(ConstraintViolation<?> violation: violations) {
 		if(!violation.getMessage().isEmpty()) {
-			logDto = new LogDto(new Date(), LogType.BAD_REQUEST_EXCEPTION, violation.getMessage(), 10, "");
+			logDto = new LogDto(new Date(), LogType.BAD_REQUEST_EXCEPTION, "LogsDbPopulatorAppl", 10, violation.getMessage());
 
 		}			
 	}
