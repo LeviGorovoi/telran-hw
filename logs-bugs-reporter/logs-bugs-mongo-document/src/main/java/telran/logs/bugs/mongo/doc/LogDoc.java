@@ -5,13 +5,16 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import telran.logs.bugs.dto.*;
 
 @Document(collection="logs")
 
 public class LogDoc {
 	@Id
-	ObjectId id;
+	ObjectId id=null;
 	public ObjectId getId() {
 		return id;
 	}

@@ -105,47 +105,6 @@ public class RandomLogsTest {
 
 	Thread[] threadArr = new Thread[N_GENERATED_DTO];
 
-//	@Test
-//	void sendRandomLogs() throws InterruptedException {
-//		for (int i = 0; i < N_GENERATED_DTO; i++) {
-//			threadArr[i] = new Thread(() -> {
-//				while (true) {
-//					byte[] messageBytes;
-//					try {
-//						messageBytes = output.receive().getPayload();
-//						System.out.println("length of " + Thread.currentThread().getName() + " " + messageBytes.length);
-//
-////						try {
-//							if (messageBytes.length != 0) {
-//								String messageStr = new String(messageBytes);
-//								System.out.println(messageStr);
-//								break;
-//							}
-////
-////							Thread.sleep(15);
-////						} catch (InterruptedException e) {
-////						}
-//
-//					} catch (NullPointerException e1) {
-//						
-//					}
-//
-//				}
-//
-//			});
-//
-////			
-//		}
-//
-//		for (int i = 0; i < N_TREADS; i++) {
-//			threadArr[i].run();
-//			threadArr[i].join();
-//			;
-//
-//		}
-//	}
-//	
-//}
 	
 	private Set<String> createSetFromDtoStrings(){		
 Set<String>	stringsOfDto = new HashSet<>();
