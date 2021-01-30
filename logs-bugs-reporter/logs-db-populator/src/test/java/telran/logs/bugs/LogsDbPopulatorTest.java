@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.InputDestination;
 import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
@@ -19,8 +17,7 @@ import telran.logs.bugs.mongo.doc.LogDoc;
 
 @SpringBootTest
 @Import(TestChannelBinderConfiguration.class)
-//@EnableAutoConfiguration
-//@AutoConfigureDataMongo
+
 public class LogsDbPopulatorTest {
 	@Autowired
 	InputDestination input;

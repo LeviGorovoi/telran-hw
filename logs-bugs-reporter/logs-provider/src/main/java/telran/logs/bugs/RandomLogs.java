@@ -3,7 +3,7 @@ package telran.logs.bugs;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import telran.logs.bugs.dto.LogDto;
@@ -11,9 +11,19 @@ import telran.logs.bugs.dto.LogType;
 
 @Component
 public class RandomLogs {
-	int secExceptionProb = 30;
-	int exceptionProb = 10;
-	int authenticationProb = 70;
+	@Value("${sec-exception-prob}")
+	int secExceptionProb;
+	@Value("${exception-prob}")
+	int exceptionProb;
+	@Value("${authentication-prob}")
+	int authenticationProb;
+	@Value("${authentication-artifact}")
+	String authenticationArtifact;
+	@Value("${authorization-artifact}")
+	String authorizationArtifact;
+	@Value("${class-artifact}")
+	String classArtifact;
+	
 public LogDto createRandomLog() {
 	LogType logType = getLogType();
 	return new LogDto(new Date(), logType, getArtifact(logType), getResponseTime(logType), "");
@@ -41,25 +51,25 @@ private EnumMap<LogType, String> getLogArtifactMap() {
 private void fillLogTypeArtifactMap(EnumMap<LogType, String> res, LogType lt) {
 	switch(lt) {
 	case AUTHENTICATION_EXCEPTION: 
-		res.put(LogType.AUTHENTICATION_EXCEPTION, "authentication");
+		res.put(LogType.AUTHENTICATION_EXCEPTION, authenticationArtifact);
 		break;
 	case AUTHORIZATION_EXCEPTION:
-		res.put(LogType.AUTHORIZATION_EXCEPTION, "authorization");
+		res.put(LogType.AUTHORIZATION_EXCEPTION, authorizationArtifact);
 		break;
 	case BAD_REQUEST_EXCEPTION:
-		res.put(LogType.BAD_REQUEST_EXCEPTION, "class");
+		res.put(LogType.BAD_REQUEST_EXCEPTION, classArtifact);
 		break;
 	case DUPLICATED_KEY_EXCEPTION:
-		res.put(LogType.DUPLICATED_KEY_EXCEPTION, "class");
+		res.put(LogType.DUPLICATED_KEY_EXCEPTION, classArtifact);
 		break;
 	case  NOT_FOUND_EXCEPTION:
-		res.put(LogType. NOT_FOUND_EXCEPTION, "class");
+		res.put(LogType. NOT_FOUND_EXCEPTION, classArtifact);
 		break;
 	case NO_EXCEPTION:
-		res.put(LogType. NO_EXCEPTION, "class");
+		res.put(LogType. NO_EXCEPTION, classArtifact);
 		break;
 	case SERVER_EXCEPTION:
-		res.put(LogType. SERVER_EXCEPTION, "class");
+		res.put(LogType. SERVER_EXCEPTION, classArtifact);
 		break;
 	
 	

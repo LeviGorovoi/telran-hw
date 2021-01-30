@@ -9,26 +9,36 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Import;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.OutputDestination;
 import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import telran.logs.bugs.dto.*;
 
 @SpringBootTest
 @Import(TestChannelBinderConfiguration.class)
 public class RandomLogsTest {
-	private static final String AUTHENTICATION_ARTIFACT = "authentication";
-	private static final String AUTHORIZATION_ARTIFACT = "authorization";
-	private static final String CLASS_ARTIFACT = "class";
-	private static final long N_LOGS = 100000;
-	private static final int N_GENERATED_DTO = 10;
+	@Value("${authentication-artifact}")
+	private String authenticationArtifact;
+	@Value("${authorization-artifact:y}")
+	private String authorizationArtifact;
+	@Value("${class-artifact:z}")
+	private String classArtifact;
+	@Value("${n-logs:1}")
+	private  long nLogs;
+	@Value("${n-generated-dto:1}")
+	private int nFeneratedDto;
 	@Autowired
 	RandomLogs randomLogs;
 	@Autowired
 	OutputDestination output;
+	static Logger LOG = LoggerFactory.getLogger(RandomLogsTest.class);
 
 	@Test
 	void logTypeArtifactTest() throws Exception {
@@ -37,13 +47,13 @@ public class RandomLogsTest {
 		logTypeArtifactsMap.forEach((k, v) -> {
 			switch (k) {
 			case AUTHENTICATION_EXCEPTION:
-				assertEquals(AUTHENTICATION_ARTIFACT, v);
+				assertEquals(authenticationArtifact, v);
 				break;
 			case AUTHORIZATION_EXCEPTION:
-				assertEquals(AUTHORIZATION_ARTIFACT, v);
+				assertEquals(authorizationArtifact, v);
 				break;
 			default:
-				assertEquals(CLASS_ARTIFACT, v);
+				assertEquals(classArtifact, v);
 
 			}
 		});
@@ -61,13 +71,14 @@ public class RandomLogsTest {
 	@Test
 	void generation() throws Exception {
 
-		List<LogDto> logs = Stream.generate(() -> randomLogs.createRandomLog()).limit(N_LOGS)
+		List<LogDto> logs = Stream.generate(() -> randomLogs.createRandomLog()).limit(nLogs)
 				.collect(Collectors.toList());
 		testLogContent(logs);
 		Map<LogType, Long> logTypeOccurrences = logs.stream()
 				.collect(Collectors.groupingBy(l -> l.logType, Collectors.counting()));
 		logTypeOccurrences.forEach((k, v) -> {
-			System.out.printf("LogType: %s, count: %d\n", k, v);
+			LOG.info("LogType: {}, count:{}", k, v);
+//			System.out.printf("LogType: %s, count: %d\n", k, v);
 		});
 		assertEquals(LogType.values().length, logTypeOccurrences.entrySet().size());
 
@@ -77,24 +88,24 @@ public class RandomLogsTest {
 		logs.forEach(log -> {
 			switch (log.logType) {
 			case AUTHENTICATION_EXCEPTION:
-				assertEquals(AUTHENTICATION_ARTIFACT, log.artifact);
+				assertEquals(authenticationArtifact, log.artifact);
 				assertEquals(0, log.responseTime);
 				assertTrue(log.result.isEmpty());
 				break;
 			case AUTHORIZATION_EXCEPTION:
-				assertEquals(AUTHORIZATION_ARTIFACT, log.artifact);
+				assertEquals(authorizationArtifact, log.artifact);
 				assertEquals(0, log.responseTime);
 				assertTrue(log.result.isEmpty());
 				break;
 
 			case NO_EXCEPTION:
-				assertEquals(CLASS_ARTIFACT, log.artifact);
+				assertEquals(classArtifact, log.artifact);
 				assertTrue(log.responseTime > 0);
 				assertTrue(log.result.isEmpty());
 				break;
 
 			default:
-				assertEquals(CLASS_ARTIFACT, log.artifact);
+				assertEquals(classArtifact, log.artifact);
 				assertEquals(0, log.responseTime);
 				assertTrue(log.result.isEmpty());
 				break;
@@ -103,7 +114,7 @@ public class RandomLogsTest {
 		});
 	}
 
-	Thread[] threadArr = new Thread[N_GENERATED_DTO];
+	Thread[] threadArr = new Thread[nFeneratedDto];
 
 	
 	private Set<String> createSetFromDtoStrings(){		
@@ -116,7 +127,7 @@ for (int i = 0; i < 10; i++) {
 		if (messageBytes.length != 0) {
 			String messageStr = new String(messageBytes);
 			stringsOfDto.add(messageStr);
-			System.out.println(messageStr);
+			LOG.info(messageStr);
 			break;
 		}
 	} catch (NullPointerException e) {
@@ -128,7 +139,7 @@ return stringsOfDto;
 @Test
 void sendRandomLogs() {
 	Set<String>	stringsOfDto = createSetFromDtoStrings();
-	assertEquals(N_GENERATED_DTO, stringsOfDto.size());
+	assertEquals(nFeneratedDto, stringsOfDto.size());
 
 }
 

@@ -50,5 +50,5 @@
 		<module>logs-provider</module>
     <module>logs-db-populator</module>
     <module>logs-analyzer</module>
-  </modules>
+	</modules>
 </project>
