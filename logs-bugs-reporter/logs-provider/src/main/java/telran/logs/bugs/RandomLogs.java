@@ -11,7 +11,7 @@ import telran.logs.bugs.dto.LogType;
 
 @Component
 public class RandomLogs {
-	@Value("${sec-exception-prob}")
+	@Value("${sec-exception-prob:70}")
 	int secExceptionProb;
 	@Value("${exception-prob}")
 	int exceptionProb;

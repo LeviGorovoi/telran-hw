@@ -15,7 +15,7 @@ import telran.logs.bugs.dto.LogType;
 @Service
 public class LogsAnalyzerService {
 	static Logger LOG = LoggerFactory.getLogger(LogsAnalyzerService.class);
-	@Value("${app-binding-name:exceptions-out-0}")
+	@Value("${app-binding-name}")
 	String bindingName;
 	@Autowired
 StreamBridge streamBridge;
@@ -27,6 +27,7 @@ StreamBridge streamBridge;
 		LOG.debug("recieved log {}", logDto);
 		if (logDto.logType != null && logDto.logType != LogType.NO_EXCEPTION) {
 			streamBridge.send(bindingName, logDto);
+			
 		}
 	}
 }

@@ -28,7 +28,7 @@ public class LogsAnalyzerTest {
 InputDestination producer;
 	@Autowired
 OutputDestination consumer;
-	@Value("${app-binding-name}")
+	@Value("${app-binding-name:exceptions-out-0}")
 	String bindingName;
 	@BeforeEach
 	void setup() {

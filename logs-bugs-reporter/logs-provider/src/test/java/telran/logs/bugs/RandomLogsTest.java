@@ -30,7 +30,7 @@ public class RandomLogsTest {
 	private String authorizationArtifact;
 	@Value("${class-artifact:z}")
 	private String classArtifact;
-	@Value("${n-logs:1}")
+	@Value("${n-logs}")
 	private  long nLogs;
 	@Value("${n-generated-dto:1}")
 	private int nFeneratedDto;
@@ -77,7 +77,7 @@ public class RandomLogsTest {
 		Map<LogType, Long> logTypeOccurrences = logs.stream()
 				.collect(Collectors.groupingBy(l -> l.logType, Collectors.counting()));
 		logTypeOccurrences.forEach((k, v) -> {
-			LOG.info("LogType: {}, count:{}", k, v);
+			LOG.debug("LogType: {}, count:{}", k, v);
 //			System.out.printf("LogType: %s, count: %d\n", k, v);
 		});
 		assertEquals(LogType.values().length, logTypeOccurrences.entrySet().size());
@@ -127,7 +127,7 @@ for (int i = 0; i < 10; i++) {
 		if (messageBytes.length != 0) {
 			String messageStr = new String(messageBytes);
 			stringsOfDto.add(messageStr);
-			LOG.info(messageStr);
+			LOG.debug(messageStr);
 			break;
 		}
 	} catch (NullPointerException e) {
