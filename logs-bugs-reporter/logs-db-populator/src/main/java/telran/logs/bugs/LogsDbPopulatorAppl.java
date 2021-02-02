@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -20,11 +22,12 @@ import telran.logs.bugs.mongo.doc.LogDoc;
 
 @SpringBootApplication
 public class LogsDbPopulatorAppl {
+	static Logger LOG = LoggerFactory.getLogger(LogsDbPopulatorAppl.class);
 	@Autowired
 	LogsRepo logs;
 	@Autowired
 	Validator validator;	
-	@Value("${app-binding-name:exceptions-out-0}")
+	@Value("${binding-name:exceptions-out-0}")
 	String bindingName;
 	@Autowired
 StreamBridge streamBridge;
@@ -49,13 +52,15 @@ void takeAndSaveLogDto( LogDto logDto) throws Exception {
 	Set<ConstraintViolation<LogDto>> violations = validator.validate(logDto);
 	for(ConstraintViolation<?> violation: violations) {
 		if(!violation.getMessage().isEmpty()) {
-			logDto = new LogDto(new Date(), LogType.BAD_REQUEST_EXCEPTION, "LogsDbPopulatorAppl", 0, violation.getMessage());
+			LOG.error("logDto : {}; field: {}; message: {}",logDto,
+					violation.getPropertyPath(), violation.getMessage());
+			logDto = new LogDto(new Date(), LogType.BAD_REQUEST_EXCEPTION, LogsDbPopulatorAppl.class.getName(), 0, violation.getMessage());
 			streamBridge.send(bindingName, logDto);
+			LOG.debug("log: {} sent to binding name: {}", logDto, bindingName);
 		}	
-		
+		 	 	
 	}
 	logs.save(new LogDoc(logDto));
-//	streamBridge.send("j", logDto);
 }
 }
 	

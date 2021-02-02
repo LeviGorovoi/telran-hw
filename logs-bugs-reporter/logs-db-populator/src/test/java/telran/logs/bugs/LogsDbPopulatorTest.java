@@ -34,7 +34,7 @@ public class LogsDbPopulatorTest {
 	LogsDbPopulatorAppl logsDbPopulatorAppl;
 	@Autowired
 	OutputDestination consumer;
-	@Value("${app-binding-name:other}")
+	@Value("${binding-name}")
 	String bindingName;
 	String expectedExcepnionMessage = "WRONG DTO";
 
@@ -55,6 +55,7 @@ public class LogsDbPopulatorTest {
 	}
 	private Message<byte[]> receiveMessage() {
 		Message<byte[]> message = consumer.receive(0, bindingName);
+		
 		if(message!=null) {
 		LOG.debug("receved in consumer {}", new String(message.getPayload()));
 		}
