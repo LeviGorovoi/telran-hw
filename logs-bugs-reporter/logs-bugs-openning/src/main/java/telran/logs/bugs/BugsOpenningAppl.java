@@ -13,17 +13,17 @@ import org.springframework.context.annotation.Bean;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.jpa.entities.Bug;
 import telran.logs.bugs.repo.BugsRepo;
-import telran.logs.bugs.service.impl.MethodsForGettingBugFromLogDtoImpl;
-import telran.logs.bugs.service.interfaces.MethodsForGettingBugFromLogDto;
+import telran.logs.bugs.service.interfaces.BugReportFactory;
 
 @SpringBootApplication
 @EntityScan("telran.logs.bugs.jpa.dto")
 public class BugsOpenningAppl {
-	static Logger LOG = LoggerFactory.getLogger(MethodsForGettingBugFromLogDtoImpl.class);
+	static Logger LOG = LoggerFactory.getLogger(BugsOpenningAppl.class);
 	@Autowired
-	MethodsForGettingBugFromLogDto methods;
+	BugReportFactory bugReportFactory;
 	@Autowired
 	BugsRepo bugsRepo;
+
 	public static void main(String[] args) {
 		ConfigurableApplicationContext ctx = SpringApplication.run(BugsOpenningAppl.class, args);
 		JPQLQueryConsole console = ctx.getBean(JPQLQueryConsole.class);
@@ -31,13 +31,12 @@ public class BugsOpenningAppl {
 	}
 @Bean
 	Consumer<LogDto> getLogDtoConsumer() {
-		return this::createBug;
+		return this::createAndSaveBugReport;
 	}
 
- void createBug (LogDto logDto) {
-	Bug bug = Bug.builder().dateOpen(methods.getDateOpen()).dateClose(methods.getDateClose()).seriousness(methods.getSeriousness(logDto))
-			.programmer(methods.getProgrammer(logDto)).status(methods.getStatus(logDto)).openningMethod(methods.getOpenningMethod()).
-			description(methods.getDescription(logDto)).build();
+ void createAndSaveBugReport (LogDto logDto) {
+	 LOG.debug("Bugs Opening service has recieved log: {}", logDto);
+	Bug bug = bugReportFactory.createBugReport(logDto);
 	bugsRepo.save(bug);
 }
 }

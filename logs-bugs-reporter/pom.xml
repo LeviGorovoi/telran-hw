@@ -25,7 +25,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
 		<dependency>
@@ -52,5 +52,6 @@
     <module>logs-analyzer</module>
     <module>logs-bugs-jpa-entities</module>
     <module>logs-bugs-openning</module>
+    <module>logs-bugs-email-provider</module>
 	</modules>
 </project>

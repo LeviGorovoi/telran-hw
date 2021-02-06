@@ -54,8 +54,7 @@ public class LogsDbPopulatorTest {
 		assertNotNull(receiveMessage());
 	}
 	private Message<byte[]> receiveMessage() {
-		Message<byte[]> message = consumer.receive(0, bindingName);
-		
+		Message<byte[]> message = consumer.receive(0, bindingName);		
 		if(message!=null) {
 		LOG.debug("receved in consumer {}", new String(message.getPayload()));
 		}

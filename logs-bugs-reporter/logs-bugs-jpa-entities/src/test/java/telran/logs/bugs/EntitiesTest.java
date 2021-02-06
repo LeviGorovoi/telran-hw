@@ -26,7 +26,7 @@ public class EntitiesTest {
 	ProgrammersRepo programmers;
 	@Test
 	void bugCreation () {
-		Programmer programmer = new Programmer(123, "Moshe");
+		Programmer programmer = new Programmer(123, "Moshe", "moshe@gmail.com");
 		programmers.save(programmer);
 		Artifact artifact = new Artifact("authentication", programmer);
 		artifacts.save(artifact);

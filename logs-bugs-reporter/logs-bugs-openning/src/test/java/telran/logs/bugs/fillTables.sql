@@ -1,4 +1,4 @@
-delete from programmers
-delete from artifacts
-INSERT INTO programmers VALUES (1, 'Moishe')
-INSERT INTO artifacts VALUES ('authentication', 1)
+delete from artifacts;
+delete from programmers;
+INSERT INTO programmers (id, name, email) VALUES (1, 'Moishe', 'moshe@gmail.com');
+INSERT INTO artifacts VALUES ('authentication', 1);
