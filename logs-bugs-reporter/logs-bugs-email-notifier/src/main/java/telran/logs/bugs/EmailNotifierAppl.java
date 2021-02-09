@@ -47,13 +47,13 @@ public class EmailNotifierAppl {
 		String messageSubject = messageToProgrammerSubject;
 		String email = emailClient.getEmailByArtifact(logDto.artifact);
 
-		if (email == "" || email == null) {
+		if (email.isEmpty() || email == null) {
 			email = emailClient.getAssignerMail();
 			addressee = messageToTeamleaderAdressee;
 			messageSubject = messageToTeamleaderSubject;
 
 		}
-		if (email == "" || email == null) {
+		if (email.isEmpty() || email == null) {
 			LOG.error(noFoundEmailLog);
 			return;
 		}
