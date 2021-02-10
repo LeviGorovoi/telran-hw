@@ -9,7 +9,7 @@ import javax.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,35 +46,43 @@ public class EmailNotifierTest {
 	String messageToProgrammerSubject;
 	@Value("${message.to.teamleader.subject:exception}")
 	String messageToTeamleaderSubject;
-	@Value("${message.to.programmer.adressee}")
-	String messageToProgrammerAdresee;
-	@Value("${message.to.teamleader.adressee}")
+	@Value("${message.to.programmer.addressee}")
+	String messageToProgrammerAddresee;
+	@Value("${message.to.teamleader.addressee}")
 	String messageToTeamleaderAdressee;
+	
+	private void  tests (String mail, String subject, String addresee) throws MessagingException {
+		LogDto logException = new LogDto(new Date(), LogType.AUTHENTICATION_EXCEPTION,
+				"artifact", 0, "result");
+		input.send(new GenericMessage<LogDto>(logException));
+		MimeMessage message = greenMail.getReceivedMessages()[0];
+		assertEquals(mail, message.getAllRecipients()[0].toString());
+		assertEquals(subject, message.getSubject());
+		assertEquals(getText(logException, addresee), GreenMailUtil.getBody(message));
+	}
 	@Test
 	void normalFlow() throws MessagingException {
 		when(client.getEmailByArtifact(anyString())).thenReturn(PROGRAMMER_EMAIL);
-		LogDto logException = new LogDto(new Date(), LogType.AUTHENTICATION_EXCEPTION,
-				"artifact", 0, "result");
-		input.send(new GenericMessage<LogDto>(logException));
-		MimeMessage message = greenMail.getReceivedMessages()[0];
-		assertEquals(PROGRAMMER_EMAIL, message.getAllRecipients()[0].toString());
-		assertEquals(messageToProgrammerSubject, message.getSubject());
-		assertEquals(getText(logException, messageToProgrammerAdresee), GreenMailUtil.getBody(message));
+		tests (PROGRAMMER_EMAIL, messageToProgrammerSubject, messageToProgrammerAddresee);
 		
 	}
 	@Test
-	void withoutEmail() throws MessagingException {
+	void withoutProgrammerEmail() throws MessagingException {
 		when(client.getEmailByArtifact(anyString())).thenReturn(null);
 		when(client.getAssignerMail()).thenReturn(TEAMLEADER_EMAIL);
+		tests (TEAMLEADER_EMAIL, messageToTeamleaderSubject, messageToTeamleaderAdressee);
+		
+		
+	}
+	
+	@Test
+	void withoutAnyEmail() throws MessagingException {
+		when(client.getEmailByArtifact(anyString())).thenReturn(null);
+		when(client.getAssignerMail()).thenReturn(null);
 		LogDto logException = new LogDto(new Date(), LogType.AUTHENTICATION_EXCEPTION,
 				"artifact", 0, "result");
 		input.send(new GenericMessage<LogDto>(logException));
-		MimeMessage message = greenMail.getReceivedMessages()[0];
-		assertEquals(TEAMLEADER_EMAIL, message.getAllRecipients()[0].toString());
-		assertEquals(messageToTeamleaderSubject, message.getSubject());
-		assertEquals(getText(logException, messageToTeamleaderAdressee).length(), GreenMailUtil.getBody(message).length());
-		assertEquals(getText(logException, messageToTeamleaderAdressee), GreenMailUtil.getBody(message));
-		
+		assertTrue(greenMail.getReceivedMessages().length==0);
 	}
 	private String getText(LogDto logDto, String addressee) {
 		return String.format(

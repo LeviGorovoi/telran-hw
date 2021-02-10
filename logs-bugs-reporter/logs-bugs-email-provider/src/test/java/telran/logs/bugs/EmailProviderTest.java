@@ -20,5 +20,13 @@ public class EmailProviderTest {
 			webClient.get().uri("/email/artifact1")
 			.exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("moshe@gmail.com");
 		}
+		
+		@Test
+		@Sql("programmerArtifact.sql")
+		void emailNoExisting() {
+			webClient.get().uri("/email/artUfact1")
+			.exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("");
+		}
+
 
 }

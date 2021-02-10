@@ -25,10 +25,10 @@ public class EmailNotifierAppl {
 	String messageToProgrammerSubject;
 	@Value("${message.to.teamleader.subject:exception}")
 	String messageToTeamleaderSubject;
-	@Value("${message.to.programmer.adressee}")
-	String messageToProgrammerAdresee;
-	@Value("${message.to.teamleader.adressee}")
-	String messageToTeamleaderAdressee;
+	@Value("${message.to.programmer.addressee}")
+	String messageToProgrammerAddresee;
+	@Value("${message.to.teamleader.addressee}")
+	String messageToTeamleaderAddressee;
 	@Value("${no.found.email.log}")
 	String noFoundEmailLog;
 
@@ -43,17 +43,17 @@ public class EmailNotifierAppl {
 	}
 
 	void takeLogAndSendMail(LogDto logDto) {
-		String addressee = messageToProgrammerAdresee;
+		String addressee = messageToProgrammerAddresee;
 		String messageSubject = messageToProgrammerSubject;
 		String email = emailClient.getEmailByArtifact(logDto.artifact);
 
-		if (email.isEmpty() || email == null) {
+		if (email == null||email.isEmpty()) {
 			email = emailClient.getAssignerMail();
-			addressee = messageToTeamleaderAdressee;
+			addressee = messageToTeamleaderAddressee;
 			messageSubject = messageToTeamleaderSubject;
 
 		}
-		if (email.isEmpty() || email == null) {
+		if (email == null||email.isEmpty()) {
 			LOG.error(noFoundEmailLog);
 			return;
 		}

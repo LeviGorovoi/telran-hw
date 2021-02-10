@@ -16,9 +16,5 @@ public class AssignerMailProviderTest {
 			webClient.get().uri("/email/teamleader")
 			.exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("boss@gmail.com");
 		}
-		@Test
-		void emailNoExisting() {
-			webClient.get().uri("/email/teamUleader")
-			.exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("");
-		}
+
 }
