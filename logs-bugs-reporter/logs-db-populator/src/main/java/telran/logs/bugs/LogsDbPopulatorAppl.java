@@ -8,10 +8,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.mongo.doc.LogDoc;
+import telran.logs.bugs.repo.LogsRepo;
 
 @SpringBootApplication
 public class LogsDbPopulatorAppl {
 	@Autowired
+
 	LogsRepo logs;
 
 public static void main(String[] args) {
