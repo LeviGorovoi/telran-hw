@@ -22,7 +22,15 @@ public static void main(String[] args) {
 
 @Bean
 Consumer<LogDto> getLogDtoConsumer (){
-	return logDto-> logs.save(new LogDoc(logDto));
+	return logDto-> {
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		logs.save(new LogDoc(logDto)).subscribe();
+	};
 }
 
 }
