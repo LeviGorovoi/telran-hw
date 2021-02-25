@@ -34,6 +34,11 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>telran.logs.bugs</groupId>
+			<artifactId>log-bugs-dto</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

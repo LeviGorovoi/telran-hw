@@ -2,7 +2,6 @@ package telran.logs.bugs.services;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -54,6 +53,7 @@ public class LogsAnalyzerService {
 		
 	}
 
+	@SuppressWarnings("unused")
 	private LogDto validateDto(LogDto logDto) {
 		LOG.debug("received log: {}", logDto);
 		Set<ConstraintViolation<LogDto>> violations = validator.validate(logDto);

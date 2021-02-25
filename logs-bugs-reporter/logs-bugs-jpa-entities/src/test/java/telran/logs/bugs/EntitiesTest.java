@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import telran.logs.bugs.dto.*;
 import telran.logs.bugs.jpa.entities.*;
 
 @ExtendWith(SpringExtension.class)

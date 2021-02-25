@@ -27,6 +27,8 @@ public class LogsDbPopulatorTest {
 	static Logger LOG = LoggerFactory.getLogger(LogsDbPopulatorTest.class);
 	@Autowired
 	InputDestination input;
+	LogDto [] logArr = new LogDto[10];
+	
 
 	@Autowired
 	LogsRepo logsRepo;
@@ -41,9 +43,13 @@ public class LogsDbPopulatorTest {
 	@Test
 	void takeLogDtoAndSave() {
 		LogDto logDto = new LogDto(new Date(), LogType.NO_EXCEPTION, "artifact", 0, "");
-		sendLog(logDto);
-		LogDto actual = logsRepo.findAll().blockFirst().getLogDto();
-		assertEquals(logDto, actual);
+		for (int i = 0; i<1; i++) {
+			logDto.result= ""+i;
+			sendLog(logDto);
+			LogDto actual = logsRepo.findAll().blockLast().getLogDto();
+			assertEquals(logDto.result, actual.result);
+		}
+		
 
 	}
 

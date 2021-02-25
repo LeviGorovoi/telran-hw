@@ -7,7 +7,6 @@ import javax.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor

@@ -5,11 +5,8 @@ import java.time.LocalDate;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-import telran.logs.bugs.dto.LogDto;
-import telran.logs.bugs.jpa.entities.BugStatus;
-import telran.logs.bugs.jpa.entities.OpenningMethod;
-import telran.logs.bugs.jpa.entities.Programmer;
-import telran.logs.bugs.jpa.entities.Seriousness;
+import telran.logs.bugs.dto.*;
+import telran.logs.bugs.jpa.entities.*;
 import telran.logs.bugs.repo.ArtifactsRepo;
 import telran.logs.bugs.service.interfaces.BugReportFactory;
 import telran.logs.bugs.service.interfaces.ConvertorFromLogDtoToBugReport;
