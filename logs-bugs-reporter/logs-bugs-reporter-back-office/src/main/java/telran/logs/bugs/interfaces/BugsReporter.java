@@ -5,6 +5,7 @@ import telran.logs.bugs.dto.*;
 
 public interface BugsReporter {
 	String ASSIGNMENT_DESCRIPTION_TITLE = "\nAssignment Description: ";
+	String CLOSE_DESCRIPTION_TITLE = "\nClose Description: ";
 	ProgrammerDto addProgrammer(ProgrammerDto programmerDto);
 	ArtifactDto addArtifact(ArtifactDto artifactDto);
 	BugResponseDto openBug(BugDto bugDto);
@@ -17,4 +18,7 @@ public interface BugsReporter {
 	List<EmailBugsCount> getEmailBugsCounts();
 	List<String> getProgrammersMostBugs(int nProgrammers);
 	List<String> getProgrammersLeastBugs(int nProgrammers);
+	List<SeriousnessBugCount> getSeriousnessBugCounts();
+	List<Seriousness> getSeriousnessTypesWithMostBugs(int nTypes);
+	
 }

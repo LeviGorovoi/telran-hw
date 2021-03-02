@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import telran.logs.bugs.dto.ProgrammerDto;
 
 @Entity
 @Table(name="programmers")

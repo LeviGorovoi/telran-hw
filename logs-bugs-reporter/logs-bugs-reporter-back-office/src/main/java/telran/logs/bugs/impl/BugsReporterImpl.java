@@ -4,17 +4,20 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import telran.logs.bugs.dto.*;
 import telran.logs.bugs.interfaces.BugsReporter;
+import telran.logs.bugs.jpa.entities.Artifact;
 import telran.logs.bugs.jpa.entities.Bug;
 import telran.logs.bugs.jpa.entities.Programmer;
 import telran.logs.bugs.repo.*;
 
-
+@Service
 public class BugsReporterImpl implements BugsReporter {
 	BugRepository bugRepository;
 	ArtifactRepository artifactRepository;
@@ -36,9 +39,10 @@ public class BugsReporterImpl implements BugsReporter {
 		return programmerDto;
 	}
 	@Override
-	public ArtifactDto addArtifact(ArtifactDto artifactDto) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArtifactDto addArtifact(ArtifactDto artifactDto) {		
+		Programmer programmer = programmerRepository.findById(artifactDto.programmerId).orElse(null);
+		artifactRepository.save(new Artifact(artifactDto.artifactId, programmer));
+		return artifactDto;
 	}
 	@Override
 	@Transactional
@@ -52,8 +56,7 @@ public class BugsReporterImpl implements BugsReporter {
 				return toBugResponseDto(bug);
 			}
 
-			private BugResponseDto toBugResponseDto(Bug bug) {
-				
+			private BugResponseDto toBugResponseDto(Bug bug) {			
 				Programmer programmer = bug.getProgrammer();
 				long programmerId = programmer == null ? 0 : programmer.getId();
 				return new BugResponseDto
@@ -78,7 +81,7 @@ public class BugsReporterImpl implements BugsReporter {
 	public void assignBug(AssignBugData assignData) {
 		//FIXME exceptions
 		Bug bug = bugRepository.findById(assignData.bugId).orElse(null);
-		bug.setDescription(bug.getDescription() + "\nAssignment Description: " +
+		bug.setDescription(bug.getDescription() + ASSIGNMENT_DESCRIPTION_TITLE +
 		assignData.description);
 		Programmer programmer = programmerRepository.findById(assignData.programmerId)
 				.orElse(null);
@@ -88,18 +91,20 @@ public class BugsReporterImpl implements BugsReporter {
 	}
 	@Override
 	public List<BugResponseDto> getNonAssignedBugs() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Bug> bugs = bugRepository.findByStatus(BugStatus.OPENNED);
+		return toListBugResponseDto(bugs);
 	}
 	@Override
+	@Transactional
 	public void closeBug(CloseBugData closeData) {
-		// TODO Auto-generated method stub
+		bugRepository.closeBug(closeData.dateClose, closeData.bugId);
 		
 	}
 	@Override
 	public List<BugResponseDto> getUnClosedBugsMoreDuration(int days) {
-		// TODO Auto-generated method stub
-		return null;
+		LocalDate dateOpen = LocalDate.now().minusDays(days);
+		List<Bug> bugs = bugRepository.findByStatusNotAndDateOpenBefore(BugStatus.CLOSED, dateOpen);
+		return toListBugResponseDto(bugs);
 	}
 	@Override
 	public List<BugResponseDto> getBugsProgrammer(long programmerId) {
@@ -112,18 +117,31 @@ public class BugsReporterImpl implements BugsReporter {
 	}
 	@Override
 	public List<EmailBugsCount> getEmailBugsCounts() {
-		// TODO Auto-generated method stub
-		return null;
+		List<EmailBugsCount> result = bugRepository.emailBugsCounts();
+		return result;
 	}
 	@Override
+	@Transactional
 	public List<String> getProgrammersMostBugs(int nProgrammers) {
-		// TODO Auto-generated method stub
-		return null;
+		Stream<String> programmers = bugRepository.descendingRatingOfProgrammersByBugs(); 
+		return programmers.limit(nProgrammers).collect(Collectors.toList());
+	}
+	
+	@Override
+	@Transactional
+	public List<String> getProgrammersLeastBugs(int nProgrammers) {
+		Stream<String> programmers = bugRepository.ascendingRatingOfProgrammersByBugs(); 
+		return programmers.limit(nProgrammers).collect(Collectors.toList());
 	}
 	@Override
-	public List<String> getProgrammersLeastBugs(int nProgrammers) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional
+	public List<SeriousnessBugCount> getSeriousnessBugCounts() {
+		return bugRepository.seriousnessBugsCounts().collect(Collectors.toList());
+	}
+	@Override
+	@Transactional
+	public List<Seriousness> getSeriousnessTypesWithMostBugs(int nTypes) {
+		return bugRepository.seriousnessBugsCounts().map(item->item.getSeriousness()).limit(nTypes).collect(Collectors.toList());
 	}
 	
 }

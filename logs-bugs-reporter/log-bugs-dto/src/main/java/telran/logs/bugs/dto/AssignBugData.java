@@ -1,6 +1,5 @@
 package telran.logs.bugs.dto;
 
-import java.time.LocalDate;
 
 import javax.validation.constraints.Min;
 
