@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import telran.logs.bugs.dto.*;
+import telran.logs.bugs.exceptions.DuplicatedException;
+import telran.logs.bugs.exceptions.NotFoundException;
 import telran.logs.bugs.interfaces.BugsReporter;
 import telran.logs.bugs.jpa.entities.Artifact;
 import telran.logs.bugs.jpa.entities.Bug;
@@ -33,14 +35,21 @@ public class BugsReporterImpl implements BugsReporter {
 	@Override
 	@Transactional
 	public ProgrammerDto addProgrammer(ProgrammerDto programmerDto) {
-		// FIXME exceptions handling and key duplication check
-		programmerRepository
-		.save(new Programmer(programmerDto.id, programmerDto.name, programmerDto.email));
+		programmerRepository.findById(programmerDto.id).ifPresent(item->{
+			throw new DuplicatedException(String.format("There is already a programmer with id %d", programmerDto.id));
+		});
+		programmerRepository.save(new Programmer(programmerDto.id, programmerDto.name, programmerDto.email));
 		return programmerDto;
 	}
 	@Override
 	public ArtifactDto addArtifact(ArtifactDto artifactDto) {		
 		Programmer programmer = programmerRepository.findById(artifactDto.programmerId).orElse(null);
+		if(programmer==null) {
+			throw new NotFoundException(String.format("No programmer with id %d", artifactDto.programmerId));
+		}
+		artifactRepository.findById(artifactDto.artifactId).ifPresent(dto->{			
+			throw new DuplicatedException(String.format("There is already a artifact with id %s", artifactDto.artifactId));
+		});
 		artifactRepository.save(new Artifact(artifactDto.artifactId, programmer));
 		return artifactDto;
 	}
@@ -66,9 +75,11 @@ public class BugsReporterImpl implements BugsReporter {
 	}
 	@Override
 	public BugResponseDto openAndAssignBug(BugAssignDto bugDto) {
-		//FIXME exceptions
 				Programmer programmer = programmerRepository.findById(bugDto.programmerId).orElse(null);
-				//TODO exception in the case programmer is null
+				if(programmer==null) {
+					throw new NotFoundException(String.format("assigning can't be done - no programmer"
+							+ " with id %d", bugDto.programmerId));
+				}
 				LocalDate dateOpen = bugDto.dateOpen != null ? bugDto.dateOpen : LocalDate.now();
 				Bug bug = 
 						new Bug(bugDto.description, dateOpen, null, BugStatus.ASSIGNED,
@@ -79,12 +90,20 @@ public class BugsReporterImpl implements BugsReporter {
 	@Override
 	@Transactional
 	public void assignBug(AssignBugData assignData) {
-		//FIXME exceptions
-		Bug bug = bugRepository.findById(assignData.bugId).orElse(null);
+		Bug bug = bugRepository.findById(assignData.bugId).orElseThrow(()->{
+			throw new NotFoundException(String.format("No bug with id %d", assignData.bugId));	
+		});
+		if(bug.getProgrammer()!=null) {
+			throw new DuplicatedException(String.format("This bug has already been assigned to the programmer with id %d", 
+					bug.getProgrammer().getId()));
+		}
 		bug.setDescription(bug.getDescription() + ASSIGNMENT_DESCRIPTION_TITLE +
 		assignData.description);
 		Programmer programmer = programmerRepository.findById(assignData.programmerId)
-				.orElse(null);
+				.orElseThrow(()->{
+					throw new NotFoundException(String.format("assigning can't be done - no programmer"
+							+ " with id %d", assignData.programmerId));	
+				});;
 		bug.setStatus(BugStatus.ASSIGNED);
 		bug.setProgrammer(programmer);
 		
@@ -97,7 +116,14 @@ public class BugsReporterImpl implements BugsReporter {
 	@Override
 	@Transactional
 	public void closeBug(CloseBugData closeData) {
-		bugRepository.closeBug(closeData.dateClose, closeData.bugId);
+		Bug bug = bugRepository.findById(closeData.getBugId()).orElseThrow(()->{
+			throw new NotFoundException(String.format("No bug with id %d", closeData.bugId));	
+		});
+		if(bug.getStatus()==BugStatus.CLOSED) {
+			throw new DuplicatedException(String.format("bug with id {} has already been cloused %d", bug.getId()));
+		}
+		bug.setStatus(BugStatus.CLOSED);
+		bug.setDateClose(closeData.getDateClose());
 		
 	}
 	@Override
