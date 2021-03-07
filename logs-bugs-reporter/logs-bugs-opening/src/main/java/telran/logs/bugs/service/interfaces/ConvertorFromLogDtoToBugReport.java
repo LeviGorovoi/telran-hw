@@ -14,6 +14,5 @@ public interface ConvertorFromLogDtoToBugReport {
 	Seriousness getSeriousness();
 	OpenningMethod getOpenningMethod();
 
-	
-	
+
 }

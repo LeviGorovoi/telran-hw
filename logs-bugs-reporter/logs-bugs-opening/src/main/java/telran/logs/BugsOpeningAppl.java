@@ -1,4 +1,4 @@
-package telran.logs.bugs;
+package telran.logs;
 
 import java.util.function.Consumer;
 
@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import telran.logs.bugs.JPQLQueryConsole;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.jpa.entities.Bug;
 import telran.logs.bugs.repo.BugsRepo;
@@ -17,15 +18,15 @@ import telran.logs.bugs.service.interfaces.BugReportFactory;
 
 @SpringBootApplication
 @EntityScan("telran.logs.bugs.jpa.dto")
-public class BugsOpenningAppl {
-	static Logger LOG = LoggerFactory.getLogger(BugsOpenningAppl.class);
+public class BugsOpeningAppl {
+	static Logger LOG = LoggerFactory.getLogger(BugsOpeningAppl.class);
 	@Autowired
 	BugReportFactory bugReportFactory;
 	@Autowired
 	BugsRepo bugsRepo;
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext ctx = SpringApplication.run(BugsOpenningAppl.class, args);
+		ConfigurableApplicationContext ctx = SpringApplication.run(BugsOpeningAppl.class, args);
 		JPQLQueryConsole console = ctx.getBean(JPQLQueryConsole.class);
 		console.run();
 	}

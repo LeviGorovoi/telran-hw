@@ -29,7 +29,7 @@ import telran.logs.bugs.repo.BugsRepo;
 @AutoConfigureTestDatabase
 @Import(TestChannelBinderConfiguration.class)
 @EntityScan("telran.logs.bugs.jpa.entities")
-public class OpenningBugsTest {
+public class OpeningBugsTest {
 @Autowired
 ProgrammersRepo programmersRepo;
 @Autowired
@@ -101,4 +101,5 @@ void testOfNotFoundException() {
 	assertEquals(1, bugs.size());
 	assertEquals(bugOfNotFoundException, bugs.get(0));	
 }
+
 }

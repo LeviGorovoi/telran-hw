@@ -1,14 +1,11 @@
 package telran.logs.bugs.services;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.validation.Validator;
-import javax.annotation.PostConstruct;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,53 +20,38 @@ import telran.logs.bugs.dto.LogType;
 @Service
 public class LogsAnalyzerService {
 	static Logger LOG = LoggerFactory.getLogger(LogsAnalyzerService.class);
-	@Value("${binding.names:exceptions-out-100,exceptions-out-1,exceptions-out-0, exceptions-out-0,exceptions-out-0,exceptions-out-0,exceptions-out-0}")
-	String[] bindingNames;
+	@Value("${app-binding-name-exceptions:exceptions-out-0}")
+	String bindingNameExceptions;
+	@Value("${app-binding-name-logs:logs-out-0}")
+	String bindingNameLogs;
 	@Value("${app-logs-provider-artifact:logs-provider}")
 	String logsProviderArtifact;
 	@Autowired
-	StreamBridge streamBridge;
+StreamBridge streamBridge;
 	@Autowired
 	Validator validator;
-	
-	Map<LogType, String> topicsMap = new HashMap<>();
-	@PostConstruct
-	public void postInit() {
-		for (int i = 0; i<LogType.values().length; i++) {
-			topicsMap.put(LogType.values()[i], bindingNames[i]);
-		}
-		}
-
 	@Bean
 	Consumer<LogDto> getAnalyzerBean() {
 		return this::analyzerMethod;
 	}
-
 	void analyzerMethod(LogDto logDto) {
-		logDto = validateDto(logDto);		
-			String topic = getBindingName(logDto);
-			streamBridge.send(topic, logDto);
-			LOG.debug("log: {} sent to binding name: {}", logDto, topic);
-		
-	}
-
-	@SuppressWarnings("unused")
-	private LogDto validateDto(LogDto logDto) {
-		LOG.debug("received log: {}", logDto);
+		LOG.debug("recievd log {}", logDto);
 		Set<ConstraintViolation<LogDto>> violations = validator.validate(logDto);
-		String [] violationMessages = new String [violations.size()];
-		if (!violations.isEmpty()) {
-			for (ConstraintViolation<?> violation : violations) {
-				LOG.error("logDto : {}; field: {}; message: {}", logDto,
-						violation.getPropertyPath(), violation.getMessage());
-			}
-			logDto = new LogDto(new Date(), LogType.BAD_REQUEST_EXCEPTION, LogsAnalyzerService.class.getName(), 0,
-					violations.toString());			
-		}
-		return logDto;
-	}
-
-	private String getBindingName(LogDto logDto) {
-		return topicsMap.get(logDto.logType);
+		final LogDto logForEach = logDto;
+		 if (!violations.isEmpty()) {
+			violations.forEach(cv -> LOG.error("logDto : {}; field: {}; message: {}",logForEach,
+					cv.getPropertyPath(), cv.getMessage()));
+			logDto = new LogDto(new Date(),
+					LogType.BAD_REQUEST_EXCEPTION, logsProviderArtifact, 0, violations.toString());
+			
+			
+		 }
+		 if(logDto.logType != LogType.NO_EXCEPTION) {
+			 streamBridge.send(bindingNameExceptions, logDto);
+				LOG.debug("log: {} sent to binding name: {}", logDto, bindingNameExceptions);
+		 }
+		 
+		streamBridge.send(bindingNameLogs, logDto);
+		
 	}
 }

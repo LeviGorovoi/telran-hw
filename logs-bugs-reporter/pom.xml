@@ -51,7 +51,6 @@
     <module>logs-db-populator</module>
     <module>logs-analyzer</module>
     <module>logs-bugs-jpa-entities</module>
-    <module>logs-bugs-openning</module>
     <module>logs-bugs-email-provider</module>
     <module>logs-bugs-email-notifier</module>
     <module>logs-bugs-assigner-mail-provider</module>
@@ -59,5 +58,6 @@
     <module>logs-bugs-random</module>
     <module>logs-bugs-reporter-back-office</module>
     <module>logs-bugs-exceptions-handler</module>
+    <module>logs-bugs-opening</module>
 	</modules>
 </project>
