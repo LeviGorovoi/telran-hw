@@ -11,7 +11,7 @@ import telran.logs.bugs.repo.ArtifactsRepo;
 import telran.logs.bugs.service.interfaces.BugReportFactory;
 import telran.logs.bugs.service.interfaces.ConvertorFromLogDtoToBugReport;
 
-@EntityScan("telran.logs.bugs.jpa.entities")
+//@EntityScan("telran.logs.bugs.jpa.entities")
 public class ConvertorFromLogDtoToBugReportImpl implements ConvertorFromLogDtoToBugReport {
 
 	ArtifactsRepo artifacts;
@@ -28,10 +28,7 @@ public class ConvertorFromLogDtoToBugReportImpl implements ConvertorFromLogDtoTo
 
 	private Programmer findProgrammerInDataBase() {
 		if (!isDatabaseChecked) {
-//			Artifact artifact = artifacts.findById(logDto.artifact).orElse(null);
-//			programmer = artifact.getProgrammer();
 			programmer = artifacts.findByArtifactId(logDto.artifact);
-//			programmer = null;
 			isDatabaseChecked = true;
 		}
 		return programmer;

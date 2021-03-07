@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import telran.logs.bugs.jpa.entities.Artifact;
 import telran.logs.bugs.jpa.entities.Programmer;
-@EntityScan("telran.logs.bugs.jpa.entities")
+//@EntityScan("telran.logs.bugs.jpa.entities")
 public interface ArtifactsRepo extends JpaRepository<Artifact, String> {
 	@Query(value = "Select a.programmer from Artifact a where a.artifactId = :artifactId")
 	Programmer findByArtifactId(String artifactId);

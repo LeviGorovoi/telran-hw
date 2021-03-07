@@ -28,7 +28,7 @@ import telran.logs.bugs.repo.BugsRepo;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @Import(TestChannelBinderConfiguration.class)
-@EntityScan("telran.logs.bugs.jpa.entities")
+//@EntityScan("telran.logs.bugs.jpa.entities")
 public class OpeningBugsTest {
 @Autowired
 ProgrammersRepo programmersRepo;
