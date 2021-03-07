@@ -3,8 +3,11 @@ package telran.logs.bugs.impl;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -169,5 +172,20 @@ public class BugsReporterImpl implements BugsReporter {
 	public List<Seriousness> getSeriousnessTypesWithMostBugs(int nTypes) {
 		return bugRepository.seriousnessBugsCounts().map(item->item.getSeriousness()).limit(nTypes).collect(Collectors.toList());
 	}
-	
+	@PostConstruct
+	private void fillArtifactsAndProgrammersDb() {
+		String[] programmerNames = {"Aharon", "Abba", "Avraham", "Adam", "Akiva", "Alexander", "Alon", "Alter",
+				"Amos", "Amram", "Ariel", "Asher", "Avi", "Avigdor", "Avner", "Azriel", "Barak"};
+		String[] artifacts = {"authentication", "authorization", "class1", "class2", "class3", "class4", "class5", "class6",
+				"class7", "class8", "class9", "class10", "class11", "class12", "class13", "class14", "class15", "class16", "class17",
+				"class18", "class19", "class20"};
+		for(int i = 0; i<programmerNames.length; i++ ) {
+			if(programmerRepository.findByProgrammerId(i)==null) {
+			programmerRepository.save(new Programmer(i, programmerNames[i], "levi.gorovoy+"+programmerNames[i]+"@gmail.com"));
+			}
+		}
+		for(String artifactId:artifacts) {
+			artifactRepository.save(new Artifact(artifactId, programmerRepository.findByProgrammerId((long) new Random().nextInt(programmerNames.length))));
+		}
+	}
 }

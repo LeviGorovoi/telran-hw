@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.InputDestination;
@@ -28,7 +27,6 @@ import telran.logs.bugs.repo.BugsRepo;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @Import(TestChannelBinderConfiguration.class)
-//@EntityScan("telran.logs.bugs.jpa.entities")
 public class OpeningBugsTest {
 @Autowired
 ProgrammersRepo programmersRepo;

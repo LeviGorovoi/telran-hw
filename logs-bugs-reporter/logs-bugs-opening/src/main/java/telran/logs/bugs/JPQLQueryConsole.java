@@ -2,7 +2,6 @@ package telran.logs.bugs;
 
 import javax.persistence.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

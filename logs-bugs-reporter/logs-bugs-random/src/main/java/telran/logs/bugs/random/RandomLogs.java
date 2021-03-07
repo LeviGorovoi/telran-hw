@@ -13,9 +13,9 @@ import telran.logs.bugs.dto.LogType;
 
 @Component
 @Configuration
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:random.properties")
 public class RandomLogs {
-	@Value("${app-count-classes:20}")
+	@Value("${app-count-classes:}")
 	int nClasses;
 	@Value("${app-sec-exception-prob:30}")
 	int secExceptionProb;

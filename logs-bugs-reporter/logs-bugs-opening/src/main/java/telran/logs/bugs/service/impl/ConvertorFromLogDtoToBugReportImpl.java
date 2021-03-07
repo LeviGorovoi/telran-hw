@@ -3,7 +3,6 @@ package telran.logs.bugs.service.impl;
 import java.time.LocalDate;
 
 
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import telran.logs.bugs.dto.*;
 import telran.logs.bugs.jpa.entities.*;
@@ -11,7 +10,6 @@ import telran.logs.bugs.repo.ArtifactsRepo;
 import telran.logs.bugs.service.interfaces.BugReportFactory;
 import telran.logs.bugs.service.interfaces.ConvertorFromLogDtoToBugReport;
 
-//@EntityScan("telran.logs.bugs.jpa.entities")
 public class ConvertorFromLogDtoToBugReportImpl implements ConvertorFromLogDtoToBugReport {
 
 	ArtifactsRepo artifacts;
