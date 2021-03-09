@@ -1,5 +1,6 @@
 package telran.logs.bugs.client;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -17,11 +18,26 @@ public class EmailProviderClient {
 	RestTemplate restTemplate = new RestTemplate();
 	@Value("${app-url-assigner-mail:xxxx}")
 	String urlAssignerMail;
+	@Value("${app-url-programmer-mail}")
+	String urlProgrammerMail;
 	@Autowired
 	ArtifactsRepo artifactsRepo;
 	public String getEmailByArtifact(String artifact) {
-		String res = artifactsRepo.findEmailByArtifactId(artifact);
+		String res;
+		try {
+			ResponseEntity<String> response =
+					restTemplate.exchange(getUrlProgrammer(artifact), HttpMethod.GET, null, String.class);
+			res = response.getBody();
+		} catch (RestClientException e) {
+			res = "";
+		}
+		log.debug("programmer email is {}", res);
 		return res;
+	}
+	private String getUrlProgrammer(String artifact) {
+		String res = urlProgrammerMail + "/mail/"+artifact;
+		log.debug("URL for getting programmer mail is {}", res);
+		return res ;
 	}
 	public String getAssignerMail () {
 		String res;

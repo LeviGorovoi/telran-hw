@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
 import telran.logs.bugs.jpa.entities.Artifact;
 import telran.logs.bugs.repo.ArtifactRepository;
 
 @SpringBootApplication
 @RestController
+@Slf4j
 public class EmailProviderAppl {
 	@Autowired
 	ArtifactRepository artifactRepository;
@@ -20,9 +22,10 @@ public class EmailProviderAppl {
 
 
 	}
-	@GetMapping("/email/{artifact}")
+	@GetMapping("/mail/{artifact}")
 	String getEmail(@PathVariable(name="artifact") String artifact) {
 		Artifact artifactEntity = artifactRepository.findById(artifact).orElse(null);
+		log.debug("artifact is {}, programmer mail is {}", artifactEntity.getArtifactId(), artifactEntity.getProgrammer().getEmail());
 		return artifactEntity == null ? "" : artifactEntity.getProgrammer().getEmail();
 		
 	}
