@@ -2,33 +2,35 @@ package telran.logs.bugs;
 
 import java.util.function.Consumer;
 
-import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import lombok.extern.slf4j.Slf4j;
 import telran.logs.bugs.client.EmailProviderClient;
 import telran.logs.bugs.dto.LogDto;
 
 @SpringBootApplication
+@EntityScan("telran.logs.bugs.jpa.entities")
+@Slf4j
 public class EmailNotifierAppl {
-	Logger LOG = LoggerFactory.getLogger(EmailNotifierAppl.class);
 	@Autowired
 	EmailProviderClient emailClient;
 	@Autowired
 	JavaMailSender mailSender;
 	@Value("${message.to.programmer.subject:exception}")
 	String messageToProgrammerSubject;
-	@Value("${message.to.teamleader.subject:exception}")
-	String messageToTeamleaderSubject;
+	@Value("${message.to.assigner.subject:exception}")
+	String messageToAssignerSubject;
 	@Value("${message.to.programmer.addressee}")
-	String messageToProgrammerAddresee;
-	@Value("${message.to.teamleader.addressee}")
-	String messageToTeamleaderAddressee;
+	String messageToProgrammerAddressee;
+	@Value("${message.to.assigner.addressee}")
+	String messageToAssignerAddressee;
 	@Value("${no.found.email.log}")
 	String noFoundEmailLog;
 
@@ -43,18 +45,18 @@ public class EmailNotifierAppl {
 	}
 
 	void takeLogAndSendMail(LogDto logDto) {
-		String addressee = messageToProgrammerAddresee;
+		String addressee = messageToProgrammerAddressee;
 		String messageSubject = messageToProgrammerSubject;
 		String email = emailClient.getEmailByArtifact(logDto.artifact);
 
 		if (email == null||email.isEmpty()) {
 			email = emailClient.getAssignerMail();
-			addressee = messageToTeamleaderAddressee;
-			messageSubject = messageToTeamleaderSubject;
+			addressee = messageToAssignerAddressee;
+			messageSubject = messageToAssignerSubject;
 
 		}
 		if (email == null||email.isEmpty()) {
-			LOG.error(noFoundEmailLog);
+			log.error(noFoundEmailLog);
 			return;
 		}
 		sendMail(logDto, email, messageSubject, addressee);
