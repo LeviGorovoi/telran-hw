@@ -9,7 +9,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import reactor.core.scheduler.Schedulers;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.mongo.doc.LogDoc;
 import telran.logs.bugs.repo.LogsRepo;

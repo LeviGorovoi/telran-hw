@@ -1,15 +1,45 @@
 package telran.logs.bugs.client;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import lombok.extern.slf4j.Slf4j;
+import telran.logs.bugs.repo.ArtifactsRepo;
 
 @Component
+@Slf4j
 public class EmailProviderClient {
+	RestTemplate restTemplate = new RestTemplate();
+	@Value("${app-url-assigner-mail:xxxx}")
+	String urlAssignerMail;
+	@Autowired
+	ArtifactsRepo artifactsRepo;
 	public String getEmailByArtifact(String artifact) {
-		//TODO communication with sync service for email
-		return null;
+		String res = artifactsRepo.findEmailByArtifactId(artifact);
+		return res;
 	}
 	public String getAssignerMail () {
-		//TODO communication with sync service for email
-		return null;
+		String res;
+		try {
+			ResponseEntity<String> response =
+					restTemplate.exchange(getUrlAssigner(), HttpMethod.GET, null, String.class);
+			res = response.getBody();
+		} catch (RestClientException e) {
+			res = "";
+		}
+		log.debug("assigner email is {}", res);
+		return res;
+	}
+	
+	private String getUrlAssigner() {
+		
+		String res = urlAssignerMail + "/mail/assigner";
+		log.debug("URL for getting assigner mail is {}", res);
+		return res ;
 	}
 }

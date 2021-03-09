@@ -181,7 +181,7 @@ public class BugsReporterImpl implements BugsReporter {
 				"class18", "class19", "class20"};
 		for(int i = 0; i<programmerNames.length; i++ ) {
 			if(programmerRepository.findByProgrammerId(i)==null) {
-			programmerRepository.save(new Programmer(i, programmerNames[i], "levi.gorovoy+"+programmerNames[i]+"@gmail.com"));
+			programmerRepository.save(new Programmer(i, programmerNames[i],"llevi9973+"+i+"@gmail.com"));
 			}
 		}
 		for(String artifactId:artifacts) {
