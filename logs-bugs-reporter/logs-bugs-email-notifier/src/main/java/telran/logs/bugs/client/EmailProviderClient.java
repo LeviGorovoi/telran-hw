@@ -10,7 +10,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
-import telran.logs.bugs.repo.ArtifactsRepo;
 
 @Component
 @Slf4j
@@ -21,7 +20,6 @@ public class EmailProviderClient {
 	@Value("${app-url-programmer-mail}")
 	String urlProgrammerMail;
 	@Autowired
-	ArtifactsRepo artifactsRepo;
 	public String getEmailByArtifact(String artifact) {
 		String res;
 		try {
