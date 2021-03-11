@@ -43,7 +43,6 @@ MockMvc mock;
 void setUp() {
 	TestController.logDtoExp = new LogDto(new Date(), LogType.NO_EXCEPTION,
 			"artifact", 0, "");
-	
 }
 
 @Test

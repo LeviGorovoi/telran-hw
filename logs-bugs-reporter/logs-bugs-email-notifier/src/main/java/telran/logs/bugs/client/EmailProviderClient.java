@@ -1,7 +1,6 @@
 package telran.logs.bugs.client;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,7 @@ public class EmailProviderClient {
 	@Value("${app-url-assigner-mail:xxxx}")
 	String urlAssignerMail;
 	@Value("${app-url-programmer-mail}")
-	String urlProgrammerMail;
-	@Autowired
+	String urlProgrammerMail;	
 	public String getEmailByArtifact(String artifact) {
 		String res;
 		try {
