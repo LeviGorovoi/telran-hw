@@ -19,7 +19,6 @@ public class EmailProviderClient {
 	String urlAssignerMail;
 	@Value("${app-url-programmer-mail}")
 	String urlProgrammerMail;
-	@Autowired
 	public String getEmailByArtifact(String artifact) {
 		String res;
 		try {
