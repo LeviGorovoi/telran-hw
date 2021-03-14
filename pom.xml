@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>telran.logs.bugs</groupId>
 	<artifactId>logs-bugs-reporter</artifactId>
@@ -35,29 +37,22 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+
 
 	<modules>
 		<module>log-bugs-dto</module>
 		<module>logs-bugs-mongo-document</module>
 		<module>logs-provider</module>
-    <module>logs-db-populator</module>
-    <module>logs-analyzer</module>
-    <module>logs-bugs-jpa-entities</module>
-    <module>logs-bugs-email-provider</module>
-    <module>logs-bugs-email-notifier</module>
-    <module>logs-bugs-assigner-mail-provider</module>
-    <module>logs-info-back-office</module>
-    <module>logs-bugs-random</module>
-    <module>logs-bugs-reporter-back-office</module>
-    <module>logs-bugs-exceptions-handler</module>
-    <module>logs-bugs-opening</module>
+		<module>logs-db-populator</module>
+		<module>logs-analyzer</module>
+		<module>logs-bugs-jpa-entities</module>
+		<module>logs-bugs-email-provider</module>
+		<module>logs-bugs-email-notifier</module>
+		<module>logs-bugs-assigner-mail-provider</module>
+		<module>logs-info-back-office</module>
+		<module>logs-bugs-random</module>
+		<module>logs-bugs-reporter-back-office</module>
+		<module>logs-bugs-exceptions-handler</module>
+		<module>logs-bugs-opening</module>
 	</modules>
 </project>
