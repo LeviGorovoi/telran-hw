@@ -12,53 +12,26 @@
   <artifactId>logs-bugs-jpa-entities</artifactId>
   <version>0.0.1</version>
   </dependency>
-    <dependency>
+  <dependency>
   <groupId>telran.logs.bugs</groupId>
   <artifactId>logs-bugs-exceptions-handler</artifactId>
   <version>0.0.1</version>
   </dependency>
+  
+  
   <dependency>
-  <groupId>com.h2database</groupId>
-  <artifactId>h2</artifactId>
-  <scope>test</scope>
+  	<groupId>org.springframework.boot</groupId>
+  	<artifactId>spring-boot-starter</artifactId>
   </dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
+  <dependency>
+  	<groupId>org.postgresql</groupId>
+  	<artifactId>postgresql</artifactId>
+  	<scope>runtime</scope>
+  </dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
   </dependencies>
-	<properties>
-		<java.version>11</java.version>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

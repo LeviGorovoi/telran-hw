@@ -26,12 +26,14 @@ import com.icegreen.greenmail.junit5.GreenMailExtension;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
 
+import lombok.extern.slf4j.Slf4j;
 import telran.logs.bugs.client.EmailProviderClient;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.dto.LogType;
 
 @SpringBootTest
 @Import({TestChannelBinderConfiguration.class, MailSenderValidatorAutoConfiguration.class})
+@Slf4j
 public class EmailNotifierTest {
 	private static final String PROGRAMMER_EMAIL = "moshe@gmail.com";
 	private static final String TEAMLEADER_EMAIL = "boss@gmail.com";
@@ -48,8 +50,8 @@ public class EmailNotifierTest {
 	String messageToTeamleaderSubject;
 	@Value("${message.to.programmer.addressee}")
 	String messageToProgrammerAddresee;
-	@Value("${message.to.teamleader.addressee}")
-	String messageToTeamleaderAdressee;
+	@Value("${message.to.assigner.addressee}")
+	String messageToAssignerAdressee;
 	
 	private void  tests (String mail, String subject, String addresee) throws MessagingException {
 		LogDto logException = new LogDto(new Date(), LogType.AUTHENTICATION_EXCEPTION,
@@ -68,9 +70,10 @@ public class EmailNotifierTest {
 	}
 	@Test
 	void withoutProgrammerEmail() throws MessagingException {
+		log.debug("TEST");
 		when(client.getEmailByArtifact(anyString())).thenReturn(null);
 		when(client.getAssignerMail()).thenReturn(TEAMLEADER_EMAIL);
-		tests (TEAMLEADER_EMAIL, messageToTeamleaderSubject, messageToTeamleaderAdressee);
+		tests (TEAMLEADER_EMAIL, messageToTeamleaderSubject, messageToAssignerAdressee);
 		
 		
 	}

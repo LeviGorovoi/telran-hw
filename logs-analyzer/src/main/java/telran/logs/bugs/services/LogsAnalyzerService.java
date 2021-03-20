@@ -14,12 +14,13 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import telran.logs.bugs.dto.LogDto;
 import telran.logs.bugs.dto.LogType;
 
 @Service
+@Slf4j
 public class LogsAnalyzerService {
-	static Logger LOG = LoggerFactory.getLogger(LogsAnalyzerService.class);
 	@Value("${app-binding-name-exceptions:exceptions-out-0}")
 	String bindingNameExceptions;
 	@Value("${app-binding-name-logs:logs-out-0}")
@@ -35,11 +36,11 @@ StreamBridge streamBridge;
 		return this::analyzerMethod;
 	}
 	void analyzerMethod(LogDto logDto) {
-		LOG.debug("recievd log {}", logDto);
+		log.debug("recievd log {}", logDto);
 		Set<ConstraintViolation<LogDto>> violations = validator.validate(logDto);
 		final LogDto logForEach = logDto;
 		 if (!violations.isEmpty()) {
-			violations.forEach(cv -> LOG.error("logDto : {}; field: {}; message: {}",logForEach,
+			violations.forEach(cv -> log.error("logDto : {}; field: {}; message: {}",logForEach,
 					cv.getPropertyPath(), cv.getMessage()));
 			logDto = new LogDto(new Date(),
 					LogType.BAD_REQUEST_EXCEPTION, logsProviderArtifact, 0, violations.toString());
@@ -48,7 +49,7 @@ StreamBridge streamBridge;
 		 }
 		 if(logDto.logType != LogType.NO_EXCEPTION) {
 			 streamBridge.send(bindingNameExceptions, logDto);
-				LOG.debug("log: {} sent to binding name: {}", logDto, bindingNameExceptions);
+				log.debug("log: {} sent to binding name: {}", logDto, bindingNameExceptions);
 		 }
 		 
 		streamBridge.send(bindingNameLogs, logDto);

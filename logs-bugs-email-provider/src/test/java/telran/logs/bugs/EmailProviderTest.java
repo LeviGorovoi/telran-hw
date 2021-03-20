@@ -17,14 +17,14 @@ public class EmailProviderTest {
 		@Test
 		@Sql("programmerArtifact.sql")
 		void emailExisting() {
-			webClient.get().uri("/email/artifact1")
+			webClient.get().uri("/mail/artifact1")
 			.exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("moshe@gmail.com");
 		}
 		
 		@Test
 		@Sql("programmerArtifact.sql")
 		void emailNoExisting() {
-			webClient.get().uri("/email/artUfact1")
+			webClient.get().uri("/mail/artUfact1")
 			.exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("");
 		}
 
