@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import telran.logs.bugs.jpa.entities.Programmer;
 import telran.logs.bugs.repo.*;
 
 @Service
+@ManagedResource(description = "testImpl")
 public class BugsReporterImpl implements BugsReporter {
 	BugRepository bugRepository;
 	ArtifactRepository artifactRepository;
@@ -37,6 +40,7 @@ public class BugsReporterImpl implements BugsReporter {
 	}
 	@Override
 	@Transactional
+	@ManagedOperation
 	public ProgrammerDto addProgrammer(ProgrammerDto programmerDto) {
 		programmerRepository.findById(programmerDto.id).ifPresent(item->{
 			throw new DuplicatedException(String.format("There is already a programmer with id %d", programmerDto.id));
@@ -44,6 +48,7 @@ public class BugsReporterImpl implements BugsReporter {
 		programmerRepository.save(new Programmer(programmerDto.id, programmerDto.name, programmerDto.email));
 		return programmerDto;
 	}
+	@ManagedOperation
 	@Override
 	public ArtifactDto addArtifact(ArtifactDto artifactDto) {		
 		Programmer programmer = programmerRepository.findById(artifactDto.programmerId).orElse(null);
@@ -56,6 +61,7 @@ public class BugsReporterImpl implements BugsReporter {
 		artifactRepository.save(new Artifact(artifactDto.artifactId, programmer));
 		return artifactDto;
 	}
+	@ManagedOperation
 	@Override
 	@Transactional
 	public BugResponseDto openBug(BugDto bugDto) {
@@ -67,7 +73,7 @@ public class BugsReporterImpl implements BugsReporter {
 				bugRepository.save(bug);
 				return toBugResponseDto(bug);
 			}
-
+	@ManagedOperation
 			private BugResponseDto toBugResponseDto(Bug bug) {			
 				Programmer programmer = bug.getProgrammer();
 				long programmerId = programmer == null ? 0 : programmer.getId();
@@ -76,6 +82,7 @@ public class BugsReporterImpl implements BugsReporter {
 								bug.getDateOpen(), programmerId, bug.getDateClose(),
 								bug.getStatus(), bug.getOpenningMethod());
 	}
+	@ManagedOperation
 	@Override
 	public BugResponseDto openAndAssignBug(BugAssignDto bugDto) {
 				Programmer programmer = programmerRepository.findById(bugDto.programmerId).orElse(null);
@@ -90,6 +97,7 @@ public class BugsReporterImpl implements BugsReporter {
 				bug = bugRepository.save(bug);
 				return toBugResponseDto(bug);
 	}
+	@ManagedOperation
 	@Override
 	@Transactional
 	public void assignBug(AssignBugData assignData) {
@@ -111,12 +119,14 @@ public class BugsReporterImpl implements BugsReporter {
 		bug.setProgrammer(programmer);
 		
 	}
+	@ManagedOperation
 	@Override
 	public List<BugResponseDto> getNonAssignedBugs() {
 		List<Bug> bugs = bugRepository.findByStatus(BugStatus.OPENNED);
 		return toListBugResponseDto(bugs);
 	}
 	@Override
+	@ManagedOperation
 	@Transactional
 	public void closeBug(CloseBugData closeData) {
 		Bug bug = bugRepository.findById(closeData.getBugId()).orElseThrow(()->{
@@ -129,49 +139,57 @@ public class BugsReporterImpl implements BugsReporter {
 		bug.setDateClose(closeData.getDateClose());
 		
 	}
+	@ManagedOperation
 	@Override
 	public List<BugResponseDto> getUnClosedBugsMoreDuration(int days) {
 		LocalDate dateOpen = LocalDate.now().minusDays(days);
 		List<Bug> bugs = bugRepository.findByStatusNotAndDateOpenBefore(BugStatus.CLOSED, dateOpen);
 		return toListBugResponseDto(bugs);
 	}
+	@ManagedOperation
 	@Override
 	public List<BugResponseDto> getBugsProgrammer(long programmerId) {
 		List<Bug> bugs = bugRepository.findByProgrammerId(programmerId);
 		return bugs.isEmpty() ? new LinkedList<>() : toListBugResponseDto(bugs);
 	}
-
+	@ManagedOperation
 	private List<BugResponseDto> toListBugResponseDto(List<Bug> bugs) {
 		return bugs.stream().map(this::toBugResponseDto).collect(Collectors.toList());
 	}
+	@ManagedOperation
 	@Override
 	public List<EmailBugsCount> getEmailBugsCounts() {
 		List<EmailBugsCount> result = bugRepository.emailBugsCounts();
 		return result;
 	}
+//	@ManagedMetric
+	@ManagedOperation
 	@Override
 	@Transactional
 	public List<String> getProgrammersMostBugs(int nProgrammers) {
 		Stream<String> programmers = bugRepository.descendingRatingOfProgrammersByBugs(); 
 		return programmers.limit(nProgrammers).collect(Collectors.toList());
 	}
-	
+	@ManagedOperation
 	@Override
 	@Transactional
 	public List<String> getProgrammersLeastBugs(int nProgrammers) {
 		Stream<String> programmers = bugRepository.ascendingRatingOfProgrammersByBugs(); 
 		return programmers.limit(nProgrammers).collect(Collectors.toList());
 	}
+	@ManagedOperation
 	@Override
 	@Transactional
 	public List<SeriousnessBugCount> getSeriousnessBugCounts() {
 		return bugRepository.seriousnessBugsCounts().collect(Collectors.toList());
 	}
+	@ManagedOperation
 	@Override
 	@Transactional
 	public List<Seriousness> getSeriousnessTypesWithMostBugs(int nTypes) {
 		return bugRepository.seriousnessBugsCounts().map(item->item.getSeriousness()).limit(nTypes).collect(Collectors.toList());
 	}
+	@ManagedOperation
 	@PostConstruct
 	private void fillArtifactsAndProgrammersDb() {
 		String[] programmerNames = {"Aharon", "Abba", "Avraham", "Adam", "Akiva", "Alexander", "Alon", "Alter",

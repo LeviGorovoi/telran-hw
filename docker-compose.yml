@@ -1,0 +1,65 @@
+version: '2.1'
+
+services:
+
+  analyzer:
+    build:
+      logs-analyzer
+    environment:
+    - KAFKA_PASSWORD=j_XIp5Ba4ZrgzDrVh42hqZnGz8vb3ZaR
+      
+  programmer-email-provider:
+   ports:
+   - "8383:8383"
+   build:
+      logs-bugs-email-provider
+   environment:
+      - POSTGRES_PASSWORD=6a8e21de097b81165b7e5bec91f57e4cd44ad8478e98de313e464b1259361002
+   
+  assigner-email-provider:
+   ports:
+   - "8282:8282"
+   build:
+      logs-bugs-assigner-mail-provider
+      
+  email-notifier:
+    build:
+      logs-bugs-email-notifier
+    environment:
+    - KAFKA_PASSWORD=j_XIp5Ba4ZrgzDrVh42hqZnGz8vb3ZaR
+    - MAIL_PASSWORD=eksgyomvzcibjwzt
+      
+  opening:
+    build:
+      logs-bugs-opening
+    environment:
+    - KAFKA_PASSWORD=j_XIp5Ba4ZrgzDrVh42hqZnGz8vb3ZaR
+    - POSTGRES_PASSWORD=6a8e21de097b81165b7e5bec91f57e4cd44ad8478e98de313e464b1259361002
+      
+  reporter-back-office:
+   ports:
+   - "9090:9090"
+   build:
+      logs-bugs-reporter-back-office
+   environment:
+    - POSTGRES_PASSWORD=6a8e21de097b81165b7e5bec91f57e4cd44ad8478e98de313e464b1259361002
+      
+  db-populator:
+    build:
+      logs-db-populator
+    environment:
+    - KAFKA_PASSWORD=j_XIp5Ba4ZrgzDrVh42hqZnGz8vb3ZaR
+    - MONGO_PASSWORD=Semtember1      
+      
+  info-back-office:
+   ports:
+   - "8585:8585"
+   build:
+      logs-info-back-office
+   environment:
+      - MONGO_PASSWORD=Semtember1
+      
+#  provider:
+#    build:
+#      logs-provider
+      
