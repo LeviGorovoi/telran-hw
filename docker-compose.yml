@@ -1,7 +1,12 @@
 version: '2.1'
 
 services:
-
+  discovery-server:
+   ports:
+   - "8761:8761"
+   build:
+      logs-bugs-discovery-server
+      
   analyzer:
     build:
       logs-analyzer
@@ -9,16 +14,12 @@ services:
     - KAFKA_PASSWORD=j_XIp5Ba4ZrgzDrVh42hqZnGz8vb3ZaR
       
   programmer-email-provider:
-   ports:
-   - "8383:8383"
    build:
       logs-bugs-email-provider
    environment:
       - POSTGRES_PASSWORD=6a8e21de097b81165b7e5bec91f57e4cd44ad8478e98de313e464b1259361002
    
   assigner-email-provider:
-   ports:
-   - "8282:8282"
    build:
       logs-bugs-assigner-mail-provider
       
@@ -59,7 +60,5 @@ services:
    environment:
       - MONGO_PASSWORD=Semtember1
       
-#  provider:
-#    build:
-#      logs-provider
+
       

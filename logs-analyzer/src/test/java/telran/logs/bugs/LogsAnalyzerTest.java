@@ -17,6 +17,7 @@ import org.springframework.cloud.stream.binder.test.*;
 import org.springframework.context.annotation.*;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;

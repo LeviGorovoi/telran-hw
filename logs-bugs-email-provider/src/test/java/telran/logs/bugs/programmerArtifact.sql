@@ -1,3 +1,4 @@
+delete from bugs;
 delete from artifacts;
 delete from programmers;
 insert into programmers (id, name, email) values(123, 'Moshe', 'moshe@gmail.com');
